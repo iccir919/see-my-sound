@@ -1,6 +1,6 @@
 console.log("ui.js loaded")
 
-import { redirectToSpotifyAuth } from "./auth.js"
+import { redirectToSpotifyAuth, logout } from "./auth.js"
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -8,13 +8,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const landing = document.getElementById("landing")
 
     const loginBtn = document.getElementById("login-btn")
-    const logoutBtn = null
+    const logoutBtn = document.getElementById("logout-btn")
 
     const accessToken = localStorage.getItem("access_token")
 
     if (accessToken) {
         landing.style.display = "none"
         content.style.display = "flex"
+
+        logoutBtn.addEventListener("click", logout) 
     } else {
         landing.style.display = "flex"
         content.style.display = "none"

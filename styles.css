@@ -11,8 +11,7 @@ html, body {
 }
 
 #login,
-#landing,
-#content {
+#landing {
     display: flex;
     height: 100vh;
     flex-direction: column;
@@ -30,7 +29,7 @@ html, body {
     margin: 0.2em 0;
 }
 
-#login-btn {
+#landing #login-btn {
     padding: 1em 2em;
     font-size: 1.5em;
     font-weight: 800;
@@ -41,12 +40,39 @@ html, body {
     cursor: pointer;
 }
 
-#login-btn:hover {
+#landing #login-btn:hover {
     background-color: #1ed760;
 }
 
-#login-btn img {
+#landing #login-btn img {
     height: 1.35em;
     vertical-align: middle;
     margin-right: 0.5em;
+}
+
+#content {
+    padding: 2em;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#content header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2em;
+}
+
+#content #logout-btn {
+    padding: 1em 1.5em;
+    font-size: 1.25em;
+    font-weight: 700;
+    color: black;
+    background-color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
 }

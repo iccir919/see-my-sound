@@ -106,13 +106,20 @@ const fetchAccessToken = async (code) => {
     const response = await  body.json()
 
     if (response.access_token) {
-        console.log(response)
         localStorage.setItem("access_token", response.access_token)
+        localStorage.setItem("refresh_token", response.refresh_token)
+        localStorage.removeItem("code_verifier")
         window.location = "index.html"
     } else {
-        console.error("Failed to get access tokens", response)
+        console.error("Failed to get access token", response)
     }
-
 }
 
-export { redirectToSpotifyAuth, fetchAccessToken }
+function logout() {
+    console.log("logging out...")
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
+    window.location.reload()
+}
+
+export { redirectToSpotifyAuth, fetchAccessToken, logout }
