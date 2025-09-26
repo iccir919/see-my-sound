@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>log in - see my sound - a Spotify powered application</title>
+
+        <link rel="stylesheet" href="styles.css">
+
+        <script type="module">
+            import { fetchAccessToken } from './js/auth.js'
+
+            const params = new URLSearchParams(window.location.search)
+            const code = params.get('code')
+
+            if (code) {
+                fetchAccessToken(code)
+            } else {
+                console.error('No code found in URL parameters')
+            }
+
+        </script>
+    </head>
+    <body>
+        <div id="login">
+            <h1>see my sound</h1>
+            <p>logging you in...</p>
+        </div>
+    </body>
+</html>

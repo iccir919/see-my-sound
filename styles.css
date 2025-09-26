@@ -10,9 +10,11 @@ html, body {
     background-color: #121212;
 }
 
-#landing {
-    height: 100vh;
+#login,
+#landing,
+#content {
     display: flex;
+    height: 100vh;
     flex-direction: column;
     justify-content: center;
     align-items: center;
