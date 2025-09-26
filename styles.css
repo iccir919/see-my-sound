@@ -1,0 +1,50 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    color: white;
+    background-color: #121212;
+}
+
+#landing {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#landing header {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+#landing h1 {
+    font-size: 3.25em;
+    margin: 0.2em 0;
+}
+
+#login-btn {
+    padding: 1em 2em;
+    font-size: 1.5em;
+    font-weight: 800;
+    color: white;
+    background-color: #1DB954;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+#login-btn:hover {
+    background-color: #1ed760;
+}
+
+#login-btn img {
+    height: 1.35em;
+    vertical-align: middle;
+    margin-right: 0.5em;
+}
