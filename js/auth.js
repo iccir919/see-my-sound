@@ -1,9 +1,9 @@
 console.log("auth.js is loaded")
 
-const redirectUri = "https://iccir919.github.io/see-my-sound/login.html"
-// const redirectUri = "http://127.0.0.1:5500/login.html"
 const clientId = "63031958f5204a9089c458ee30b5f71e"
-const scope = "user-top-read user-read-recently-played user-read-private"
+// const redirectUri = "https://iccir919.github.io/see-my-sound/callback.html"
+const redirectUri = "http://127.0.0.1:5500/callback.html"
+const scope = "user-top-read"
 
 /*
     PKCE (Proof Key for Code Exchange) authorization flow
@@ -85,8 +85,7 @@ const redirectToSpotifyAuth = async () => {
     window.location = `https://accounts.spotify.com/authorize?${params.toString()}`
 }
 
-const fetchAccessToken = async (code) => {
-    const codeVerifier = localStorage.getItem("code_verifier")
+const fetchAccessToken = async (code, codeVerifier) => {
 
     const url = "https://accounts.spotify.com/api/token"
     const payload = {
@@ -119,6 +118,7 @@ const fetchAccessToken = async (code) => {
 
 const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("refresh_token")
+    
     if (!refreshToken) {
         console.error("No refresh token found")
         return null
@@ -139,6 +139,8 @@ const refreshAccessToken = async () => {
     })
 
     const data = await response.json()
+    console.log("Refresh token response:", data)
+
     if (data.access_token) {
         localStorage.setItem("access_token", data.access_token)
         if (data.refresh_token) {
