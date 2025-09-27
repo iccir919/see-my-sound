@@ -87,6 +87,8 @@ html, body {
 }
 
 #content #top-artists li {
+    font-size: 1.5rem;
+    font-weight: 700;
     display: flex;
     align-items: center;
     margin: 1em 0;
