@@ -2,7 +2,7 @@ console.log("auth.js is loaded")
 
 const clientId = "63031958f5204a9089c458ee30b5f71e"
 const redirectUri = "http://127.0.0.1:5500/login.html"
-const scope = "user-read-private user-read-email"
+const scope = "user-top-read user-read-recently-played user-read-private"
 
 /*
     PKCE (Proof Key for Code Exchange) authorization flow

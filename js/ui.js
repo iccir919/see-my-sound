@@ -1,6 +1,29 @@
 console.log("ui.js loaded")
 
 import { redirectToSpotifyAuth, logout } from "./auth.js"
+import { fetchSpotifyApi } from "./api.js"
+
+const showTopArtists = async () => {
+    const data = await fetchSpotifyApi("me/top/artists?limit=10&time_range=long_term")
+    const list = document.getElementById("top-artists")
+    list.innerHTML = ""
+
+    data.items.forEach(artist => {
+        const li = document.createElement("li")
+        const img = document.createElement("img")
+
+        img.src = artist.images[0]?.url || ""
+        img.alt = artist.name
+
+        const name = document.createElement("span")
+        name.textContent = artist.name
+
+        li.appendChild(img)
+        li.appendChild(name)
+        list.appendChild(li)
+    })
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -15,6 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (accessToken) {
         landing.style.display = "none"
         content.style.display = "flex"
+
+        showTopArtists()
 
         logoutBtn.addEventListener("click", logout) 
     } else {

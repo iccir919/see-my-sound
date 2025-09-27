@@ -76,3 +76,28 @@ html, body {
     border-radius: 50px;
     cursor: pointer;
 }
+
+#content #logout-btn:hover {
+    background-color: #1ed760;
+}   
+
+#content #top-artists {
+    list-style: none;
+    padding: 1em;
+}
+
+#content #top-artists li {
+    display: flex;
+    align-items: center;
+    margin: 1em 0;
+    padding: 0.5em;
+    background-color: #1e1e1e;
+    border-radius: 0.5em;
+}
+
+#content #top-artists img {
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+    margin-right: 1em;
+}
