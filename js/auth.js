@@ -2,6 +2,7 @@ console.log("auth.js is loaded")
 
 const clientId = "63031958f5204a9089c458ee30b5f71e"
 const redirectUri = "https://iccir919.github.io/see-my-sound/login.html"
+// const redirectUri = "http://127.0.0.1:5500/login.html"
 const scope = "user-top-read user-read-recently-played user-read-private"
 
 /*

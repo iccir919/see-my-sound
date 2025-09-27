@@ -12,6 +12,11 @@ const fetchSpotifyApi = async (endpoint, method = 'GET', body = null) => {
         body: body ? JSON.stringify(body) : null
     })
 
+    if ( !response.ok ) {
+        console.error("Spotify API error", response.status, response.statusText)
+        return null
+    }
+
     return await response.json()
 }
 
