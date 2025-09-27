@@ -1,8 +1,8 @@
 console.log("auth.js is loaded")
 
 const clientId = "63031958f5204a9089c458ee30b5f71e"
-// const redirectUri = "https://iccir919.github.io/see-my-sound/callback.html"
-const redirectUri = "http://127.0.0.1:5500/callback.html"
+const redirectUri = "https://iccir919.github.io/see-my-sound/callback.html"
+// const redirectUri = "http://127.0.0.1:5500/callback.html"
 const scope = "user-top-read"
 
 /*
