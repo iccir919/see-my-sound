@@ -1,8 +1,8 @@
 console.log("auth.js is loaded")
 
-const clientId = "63031958f5204a9089c458ee30b5f71e"
 const redirectUri = "https://iccir919.github.io/see-my-sound/login.html"
 // const redirectUri = "http://127.0.0.1:5500/login.html"
+const clientId = "63031958f5204a9089c458ee30b5f71e"
 const scope = "user-top-read user-read-recently-played user-read-private"
 
 /*
@@ -116,13 +116,6 @@ const fetchAccessToken = async (code) => {
     }
 }
 
-function logout() {
-    console.log("logging out...")
-    localStorage.removeItem("access_token")
-    localStorage.removeItem("refresh_token")
-    window.location.reload()
-}
-
 
 const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("refresh_token")
@@ -158,5 +151,13 @@ const refreshAccessToken = async () => {
     }
 }
 
+function logout() {
+    console.log("logging out...")
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
+    window.location.reload()
+}
 
-export { redirectToSpotifyAuth, fetchAccessToken, logout }
+
+
+export { redirectToSpotifyAuth, fetchAccessToken, refreshAccessToken, logout }
