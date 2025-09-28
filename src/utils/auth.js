@@ -1,8 +1,8 @@
 console.log("auth.js is loaded")
 
 const clientId = "63031958f5204a9089c458ee30b5f71e"
-const redirectUri = "https://iccir919.github.io/see-my-sound/callback.html"
-// const redirectUri = "http://127.0.0.1:5500/callback.html"
+// const redirectUri = "https://iccir919.github.io/see-my-sound/callback"
+const redirectUri = "http://127.0.0.1:5500/callback"
 const scope = "user-top-read"
 
 /*
@@ -30,7 +30,6 @@ const generateRandomString = (length = 128) => {
     const values = crypto.getRandomValues(new Uint32Array(length))
     return values.reduce((acc, x) => acc + possible[x % possible.length], "")
 }
-
 
 /*
     code challenge
@@ -60,19 +59,21 @@ const base64urlencode = (input) => {
         .replace(/=+$/, "")
 }
 
+/*
+    redirectToSpotifyAuth
+
+    this function will redirect the user to the Spotify authorization
+    endpoint with the necessary parameters for PKCE authentication
+*/
 const redirectToSpotifyAuth = async () => {
     console.log("redirecting to Spotify auth...")
 
     const codeVerifier = generateRandomString(128)
-    /*
-        using local storage to store the verifier data, 
-        which works like a password for the token exchange process
-    */
-    localStorage.setItem("code_verifier", codeVerifier)
-    const hashed = await sha256(codeVerifier)
-    const codeChallenge = base64urlencode(hashed)
+    const codeChallengeBuffer = await sha256(codeVerifier)
+    const codeChallenge = base64urlencode(codeChallengeBuffer)
 
-    
+    localStorage.setItem("code_verifier", codeVerifier)
+
     const params = new URLSearchParams({
         response_type: "code",
         client_id: clientId,
@@ -89,48 +90,16 @@ const fetchAccessToken = async (code, codeVerifier) => {
 
     const url = "https://accounts.spotify.com/api/token"
     const payload = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-            client_id: clientId,
-            grant_type: "authorization_code",
-            code: code,
-            redirect_uri: redirectUri,
-            code_verifier: codeVerifier
-        })
-    }
-
-    const body = await fetch(url, payload)
-    const response = await  body.json()
-
-    if (response.access_token) {
-        localStorage.setItem("access_token", response.access_token)
-        localStorage.setItem("refresh_token", response.refresh_token)
-        localStorage.removeItem("code_verifier")
-        window.location = "index.html"
-    } else {
-        console.error("Failed to get access token", response)
-    }
-}
-
-
-const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem("refresh_token")
-    
-    if (!refreshToken) {
-        console.error("No refresh token found")
-        return null
-    }
-
-    const body = new URLSearchParams({
         client_id: clientId,
-        grant_type: "refresh_token",
-        refresh_token: refreshToken
-    })
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier
+    }
 
-    const response = await fetch("https://accounts.spotify.com/api/token", {
+    const body = new URLSearchParams(payload)
+
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -138,28 +107,51 @@ const refreshAccessToken = async () => {
         body: body
     })
 
-    const data = await response.json()
-    console.log("Refresh token response:", data)
+    if (!response.ok) {
+        console.error("Failed to fetch access token", await response.text())
+        return null
+    }
 
+    return await response.json()
+}
+
+const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem("refresh_token")
+    if (!refreshToken) {
+        console.error("No refresh token found")
+        return null
+    }
+
+    const url = "https://accounts.spotify.com/api/token"
+    const payload = {
+        client_id: clientId,
+        grant_type: "refresh_token",
+        refresh_token: refreshToken
+    }
+
+    const body = new URLSearchParams(payload)
+
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: body
+    })
+
+    if (!response.ok) {
+        console.error("Failed to refresh access token", await response.text())
+        return null
+    }
+
+    const data = await response.json()
     if (data.access_token) {
         localStorage.setItem("access_token", data.access_token)
         if (data.refresh_token) {
             localStorage.setItem("refresh_token", data.refresh_token)
         }
-        return data.access_token
-    } else {
-        console.error("Failed to refresh access token", data)
-        return null
     }
+    return data.access_token
 }
 
-function logout() {
-    console.log("logging out...")
-    localStorage.removeItem("access_token")
-    localStorage.removeItem("refresh_token")
-    window.location.reload()
-}
-
-
-
-export { redirectToSpotifyAuth, fetchAccessToken, refreshAccessToken, logout }
+export { redirectToSpotifyAuth, fetchAccessToken, refreshAccessToken }
