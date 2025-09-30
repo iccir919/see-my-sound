@@ -1,6 +1,7 @@
 import React from "react"
+import TopArtists from "./TopArtists.jsx"
 
-const Content = (props) => {
+export default function Content({ accessToken, logout }) {
     return (
         <div id="content">
             <header>
@@ -8,10 +9,10 @@ const Content = (props) => {
                     <h1>see my sound</h1>
                     <p>a Spotify powered application</p>
                 </div>
-                <button onClick={props.logout}>Log out</button>
+                <button onClick={logout}>Log out</button>
             </header>
+            <TopArtists accessToken={accessToken} />
         </div>
     )
 }
 
-export default Content
