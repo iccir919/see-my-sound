@@ -1,8 +1,7 @@
 console.log("auth.js is loaded")
 
-const clientId = "63031958f5204a9089c458ee30b5f71e"
-// const redirectUri = "https://iccir919.github.io/see-my-sound/callback"
-const redirectUri = "http://127.0.0.1:5500/"
+const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
+const redirectUri = import.meta.env.VITE_REDIRECT_URI
 const scope = "user-top-read"
 
 /*
