@@ -1,9 +1,9 @@
-import React from "react"
 import TopArtists from "./TopArtists.jsx"
+import TopTracks from "./TopTracks.jsx"
 
-export default function Content({ accessToken, logout }) {
+const Content = ({ logout }) => {
     return (
-        <div id="content">
+        <div className="content">
             <header>
                 <div>
                     <h1>see my sound</h1>
@@ -11,8 +11,16 @@ export default function Content({ accessToken, logout }) {
                 </div>
                 <button onClick={logout}>Log out</button>
             </header>
-            <TopArtists accessToken={accessToken} />
+
+            <section>
+                <TopArtists />
+            </section>
+
+            <section>
+                <TopTracks />
+            </section>
         </div>
     )
 }
 
+export default Content

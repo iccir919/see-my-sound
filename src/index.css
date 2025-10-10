@@ -10,7 +10,7 @@ html, body {
   background-color: #121212;
 }
 
-#landing {
+.landing {
   display: flex;
   height: 100vh;
   flex-direction: column;
@@ -18,17 +18,17 @@ html, body {
   align-items: center;    
 }
 
-#landing h1 {
+.landing h1 {
   font-size: 3.25em;
   margin: 0;
 }
 
-#landing p {
+.landing p {
   margin: 0.2em 0 1.5em 0;
   font-size: 1.25em;
 }
 
-#landing button {
+.landing button {
   padding: 1em 2em;
   font-size: 1.5em;
   font-weight: 800;
@@ -39,17 +39,17 @@ html, body {
   cursor: pointer;
 }
 
-#landing button img {
+.landing button img {
   height: 1.35em;
   vertical-align: middle;
   margin: 0 0.5em 0 0.5em;
 }
 
-#landing button:hover {
+.landing button:hover {
   background-color: #1ed760;
 }
 
-#content {
+.content {
   width: 100%;
   max-width: 980px;
   margin: 0 auto;
@@ -58,14 +58,14 @@ html, body {
   flex-direction: column;
 }
 
-#content header {
+.content header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2em;
 }
 
-#content header button {
+.content header button {
     padding: 1em 1.5em;
     font-size: 1.25em;
     font-weight: 700;
@@ -76,29 +76,94 @@ html, body {
     cursor: pointer;
 }
 
-#content header button:hover {
+.content header button:hover {
     background-color: #1ed760;
 }
 
-#top-artists ul {
-  list-style: none;
-  padding: 1em;
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1em;
 }
 
-#top-artists li {
-  font-size: 1.35rem;
+.artist-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill, 
+    minmax(140px, 1fr)
+  );
+}
+
+.artist-card {
+  background: #181818;
+  border-radius: .75em;
+  padding: 1em;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.artist-card:hover {
+  transform: scale(1.05)
+}
+
+.artist-image {
+  width: 100%;
+  border-radius: 0.5em;
+  object-fit: cover;
+}
+
+.artist-name {
+  margin-top: 0.5em;
   font-weight: 700;
+}
+
+.top-tracks {
+  margin-top: 4em;
+}
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.track-card {
   display: flex;
   align-items: center;
-  margin: 1em 0;
-  padding: 0.5em;
-  background-color: #1e1e1e;
-  border-radius: 0.5em;
+  gap: 1em;
+  background: #181818;
+  border-radius: 0.75em;
+  padding: 0.75em 1em;
+  transition: background 0.2s, transform 0.2s;
 }
 
-#top-artists li img {
-  height: 3.5em;
-  width: 3.5em;
-  border-radius: 50%;
-  margin-right: 1em;
+.track-card:hover {
+  background: #1e1e1e;
+  transform: scale(1.02);
+}
+
+.track-image {
+  width: 64px;
+  height: 64px;
+  border-radius: .25em;
+  object-fit: cover;
+}
+
+.track-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.track-name {
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.track-artist {
+  font-size: 0.9rem;
+  color: #b3b3b3;
+  margin: 0.25em 0 0;
 }
