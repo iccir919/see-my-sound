@@ -1,63 +1,59 @@
-import { useState, useEffect } from "react"
-import { fetchAccessToken } from "./utils/auth.js"
-import Landing from "./components/Landing"
-import Content from "./components/Content"
-import "./index.css"
+import { useEffect, useState } from "react"
+import { redirectToSpotifyAuth, fetchAccessToken } from "./auth.js"
 
-const App = () => {
-    const [accessToken, setAccessToken] = useState(null)
+import Dashboard from "./components/Dashboard"
+import spotifyLogo from "./assets/spotify_full_logo_white.svg"
+import "./App.css"
+
+export default function App() {
+
+    const [accessToken, setAccessToken] = useState(localStorage.getItem("access_token"))
 
     useEffect(() => {
-
-        const storedAccessToken = localStorage.getItem("access_token")
-        if (storedAccessToken) {
-            setAccessToken(storedAccessToken)
-            return
-        }
-
-        // check if returning from Spotify auth
         const params = new URLSearchParams(window.location.search)
         const code = params.get("code")
-        const error = params.get("error")
 
-        if (error) {
-            console.error("Spotify authorization error", error)
-        } 
-        
-        if (code) {
+        if (code && !accessToken) {
             const codeVerifier = localStorage.getItem("code_verifier")
-            if (!codeVerifier) {
-                console.error("No code verifier found in local storage")
-                return
-            }
+            if (!codeVerifier) return
+        
 
-            
-            fetchAccessToken(code, codeVerifier).then(data => {
-                if (data) {
-                    localStorage.setItem("access_token", data.access_token)
-                    localStorage.setItem("refresh_token", data.refresh_token)
-                    setAccessToken(data.access_token)
-                    window.history.replaceState({}, document.title, "/") // remove code from URL
-                } else {
-                    console.error("Failed to obtain access token")
-                }
-            })  
-        } 
-    }, [])
+            fetchAccessToken(code, codeVerifier)
+                .then((response) => {
+                    console.log(response)
+                    if (response.access_token) {
+                        localStorage.setItem("access_token", response.access_token)
+                        localStorage.setItem("refresh_token", response.refresh_token)
+                        setAccessToken(response.access_token)
+                        window.history.replaceState({}, document.title, "/")
+                    }
+                })
+        }
+    }, [accessToken])
 
-    const logout = () => {
+    function handleLogout() {
         localStorage.clear()
         setAccessToken(null)
     }
 
-    return (
-        <div className="app">
-            {accessToken ? 
-                (<Content
-                    logout={logout} 
-                />) : (<Landing />)}
-        </div>
-    )
-}
+    if (!accessToken) {
+        return (
+            <div className="landing">
+                <h1>see my sound</h1>
+                <p>a Spotify powered application</p>
+                <button 
+                    className="login-button" 
+                    onClick={redirectToSpotifyAuth}
+                >
+                    Login with 
+                    <img
+                        src={spotifyLogo}
+                        alt="Spotify logo"
+                    />
+                </button>
+            </div>
+        )
+    }
 
-export default App
+    return <Dashboard onLogout={handleLogout} />
+}
