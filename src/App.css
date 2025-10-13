@@ -1,0 +1,108 @@
+body {
+  margin: 0;
+  background-color: #121212;
+  color: white;
+  font-family: system-ui, sans-serif;
+}
+
+button {
+  font-size: 1.25rem;
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  cursor: pointer;
+}
+
+.landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.landing h1 {
+  font-size: 2.5em;
+  margin-bottom: 0.25em;
+}
+
+.landing p {
+  font-size: 1.25em;
+  margin: 0;
+}
+
+.landing button {
+  padding: .75em 1.5em;
+  margin-top: 2.5em;
+  font-weight: 600;
+}
+
+.landing button img {
+  vertical-align: middle;
+  margin: 0.5em;
+  height: 1.5em;
+}
+
+
+button:hover {
+  opacity: 0.95;
+}
+
+.dashboard {
+  color: #fff;
+  background: #121212;
+  min-height: 100vh;
+  padding: 2em;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filters {
+  margin: 2em 0;
+  font-size: 1.5rem;
+}
+
+.filters select {
+  font-size: 1.5rem;
+  background: #181818;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 0.25em;
+  padding: 0.25em 0.75em;
+  margin: 0 0.25em;
+}
+
+.top-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.top-item {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.artwork {
+  width: 64px;
+  height: 64px;
+  border-radius: .5em;
+  object-fit: cover;
+}
+
+.info .name {
+  font-weight: 600;
+}
+
+.info .artists {
+  color: #aaa;
+  font-size: 0.75em;
+}
