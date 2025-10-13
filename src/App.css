@@ -78,3 +78,31 @@ button:hover {
   padding: 0.25em 0.75em;
   margin: 0 0.25em;
 }
+
+.top-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.top-item {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.artwork {
+  width: 64px;
+  height: 64px;
+  border-radius: .5em;
+  object-fit: cover;
+}
+
+.info .name {
+  font-weight: 600;
+}
+
+.info .artists {
+  color: #aaa;
+  font-size: 0.75em;
+}

@@ -1,6 +1,6 @@
 console.log("spotify.js loaded")
 
-import { refreshAccessToken } from "./auth.js"
+import { refreshAccessToken } from "../auth.js"
 
 export async function fetchWithAuth(url) {
     const accessToken = localStorage.getItem("access_token")

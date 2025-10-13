@@ -1,7 +1,9 @@
 import { useState } from "react"
 
+import TopList from "./TopList"
+
 export default function Dashboard({ onLogout }) {
-    const [type, setType] = useState("tracks")
+    const [type, setType] = useState("artists")
     const [timeRange, setTimeRange] = useState("medium_term")
     const [limit, setLimit] = useState(10)
 
@@ -22,7 +24,6 @@ export default function Dashboard({ onLogout }) {
                         <option value="5">top 5</option>
                         <option value="10">top 10</option>
                         <option value="20">top 20</option>
-                        <option value="50">top 50</option>
                     </select>{" "}
                     <select 
                         value={type} 
@@ -42,6 +43,12 @@ export default function Dashboard({ onLogout }) {
                     </select>
                 </p>
             </div>
+
+            <TopList 
+                type={type} 
+                timeRange={timeRange}
+                limit={limit}
+            />
         </div>
     )
 }

@@ -62,7 +62,7 @@ export async function refreshAccessToken() {
 
     const url = "https://accounts.spotify.com/api/token"
     const body = new URLSearchParams({
-        client_id: clientId,
+        client_id: CLIENT_ID,
         grant_type: "refresh_token",
         refresh_token: refreshToken
     })
