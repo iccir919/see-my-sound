@@ -1,59 +1,77 @@
-import { useEffect, useState } from "react"
-import { redirectToSpotifyAuth, fetchAccessToken } from "./auth.js"
-
-import Dashboard from "./components/Dashboard"
-import spotifyLogo from "./assets/spotify_full_logo_white.svg"
-import "./App.css"
+import React, { useEffect } from "react";
+import { useSpotify } from "./context/SpotifyContext.jsx";
+import { redirectToSpotifyAuth, fetchAccessToken } from "./utils/auth.js";
+import Landing from "./components/Landing.jsx";
+import Header from "./components/Header.jsx";
+import "./index.css";
 
 export default function App() {
+    const {
+        accessToken,
+        setAccessToken,
+        setRefreshToken,
+        isLoggedIn,
+        setIsLoggedIn
+    } = useSpotify();
 
-    const [accessToken, setAccessToken] = useState(localStorage.getItem("access_token"))
+    // On app load, check localStorage or exchange code from redirect
+    useEffect( () => {
+        // check stored tokens first
+        const storedAccessToken = localStorage.getItem("access_token");
+        const storedRefreshToken = localStorage.getItem("refresh_token");
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search)
-        const code = params.get("code")
+        if (storedAccessToken) {
+            setAccessToken(storedAccessToken);
+            if (storedRefreshToken) setRefreshToken(storedRefreshToken);
+            setIsLoggedIn(true);
+            return;
+        }
 
-        if (code && !accessToken) {
-            const codeVerifier = localStorage.getItem("code_verifier")
-            if (!codeVerifier) return
+        // check for authorization code in URL
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
         
+        if (code) {
+            const codeVerifier = localStorage.getItem("code_verifier");
+            if (!codeVerifier) {
+                console.error("Code verifier not found in localStorage");
+                return;
+            }
 
-            fetchAccessToken(code, codeVerifier)
-                .then((response) => {
-                    console.log(response)
-                    if (response.access_token) {
-                        localStorage.setItem("access_token", response.access_token)
-                        localStorage.setItem("refresh_token", response.refresh_token)
-                        setAccessToken(response.access_token)
-                        window.history.replaceState({}, document.title, "/")
-                    }
+            fetchAccessToken(code, codeVerifier).then(data => {
+                if (!data) return;
+
+                localStorage.setItem("access_token", data.access_token);
+                setAccessToken(data.access_token);
+
+                if (data.refresh_token) {
+                    localStorage.setItem("refresh_token", data.refresh_token);
+                    setRefreshToken(data.refresh_token);    
+                }
+
+                setIsLoggedIn(true);
+                localStorage.removeItem("code_verifier");
+                window.history.replaceState({}, document.title, "/");   
+
+                }).catch(err => {
+                    console.error("Failed to exchange code,", err);
                 })
         }
-    }, [accessToken])
 
-    function handleLogout() {
-        localStorage.clear()
-        setAccessToken(null)
-    }
+    }, [setAccessToken, setRefreshToken, setIsLoggedIn]);
 
-    if (!accessToken) {
-        return (
-            <div className="landing">
-                <h1>see my sound</h1>
-                <p>a Spotify powered application</p>
-                <button 
-                    className="login-button" 
-                    onClick={redirectToSpotifyAuth}
-                >
-                    Login with 
-                    <img
-                        src={spotifyLogo}
-                        alt="Spotify logo"
-                    />
-                </button>
-            </div>
-        )
-    }
-
-    return <Dashboard onLogout={handleLogout} />
+    return (
+        <div className="app">
+            { !isLoggedIn ? 
+                <Landing 
+                    handleLogin={redirectToSpotifyAuth}
+                /> 
+                : (
+                    <>
+                        <Header />
+                    </>
+                )
+            }
+        </div>
+    )
 }
