@@ -3,7 +3,7 @@ export default function Landing({handleLogin}) {
         <div className="landing">
             <h1>See My Sound</h1>
             <button 
-                className="login-btn"
+                className="btn-primary"
                 onClick={handleLogin}
             >
                 Log in with Spotify

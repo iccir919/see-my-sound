@@ -60,6 +60,13 @@ export default function App() {
 
     }, [setAccessToken, setRefreshToken, setIsLoggedIn]);
 
+    function handleLogout() {
+        localStorage.clear();
+        setAccessToken(null);
+        setAccessToken(null);
+        setIsLoggedIn(false);
+    }
+
     return (
         <div className="app">
             { !isLoggedIn ? 
@@ -68,7 +75,7 @@ export default function App() {
                 /> 
                 : (
                     <>
-                        <Header />
+                        <Header onLogout={handleLogout} />
                     </>
                 )
             }
