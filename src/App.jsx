@@ -3,11 +3,12 @@ import { useSpotify } from "./context/SpotifyContext.jsx";
 import { redirectToSpotifyAuth, fetchAccessToken } from "./utils/auth.js";
 import Landing from "./components/Landing.jsx";
 import Header from "./components/Header.jsx";
+import FilterBar from "./components/FilterBar.jsx";
+import TopList from "./components/TopList.jsx";
 import "./index.css";
 
 export default function App() {
     const {
-        accessToken,
         setAccessToken,
         setRefreshToken,
         isLoggedIn,
@@ -76,6 +77,10 @@ export default function App() {
                 : (
                     <>
                         <Header onLogout={handleLogout} />
+                        <main>
+                            <FilterBar />
+                            <TopList />
+                        </main>
                     </>
                 )
             }
