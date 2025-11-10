@@ -64,7 +64,7 @@ export default function App() {
     function handleLogout() {
         localStorage.clear();
         setAccessToken(null);
-        setAccessToken(null);
+        setRefreshToken(null);
         setIsLoggedIn(false);
     }
 
