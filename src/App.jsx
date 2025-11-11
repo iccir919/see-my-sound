@@ -1,59 +1,118 @@
-import { useEffect, useState } from "react"
-import { redirectToSpotifyAuth, fetchAccessToken } from "./auth.js"
-
-import Dashboard from "./components/Dashboard"
-import spotifyLogo from "./assets/spotify_full_logo_white.svg"
-import "./App.css"
+import React, { useEffect, useState } from "react";
+import { useSpotify } from "./context/SpotifyContext.jsx";
+import { redirectToSpotifyAuth, fetchAccessToken } from "./utils/auth.js";
+import { tokenManager } from "./utils/tokenManager.js";
+import Landing from "./components/Landing.jsx";
+import Header from "./components/Header.jsx";
+import FilterBar from "./components/FilterBar.jsx";
+import TopList from "./components/TopList.jsx";
+import "./index.css";
 
 export default function App() {
 
-    const [accessToken, setAccessToken] = useState(localStorage.getItem("access_token"))
+    const {
+        setIsLoggedIn,
+        isLoggedIn
+    } = useSpotify();
+
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search)
-        const code = params.get("code")
+        async function handleAuth() {
 
-        if (code && !accessToken) {
-            const codeVerifier = localStorage.getItem("code_verifier")
-            if (!codeVerifier) return
-        
 
-            fetchAccessToken(code, codeVerifier)
-                .then((response) => {
-                    console.log(response)
-                    if (response.access_token) {
-                        localStorage.setItem("access_token", response.access_token)
-                        localStorage.setItem("refresh_token", response.refresh_token)
-                        setAccessToken(response.access_token)
-                        window.history.replaceState({}, document.title, "/")
+            try {
+                const accessToken = tokenManager.getAccessToken();
+                if (accessToken) {
+                    setIsLoggedIn(true);
+                    setIsLoading(false);
+                    return;
+                }
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get("code");
+                const authError = urlParams.get("error");
+
+                if (authError) {
+                    setError(`Authentication error: ${authError}`);
+                    window.history.replaceState({}, document.title, "/");
+                    setIsLoading(false);
+                    return;
+                }
+
+                if (code) {
+                    const codeVerifier = tokenManager.getCodeVerifier();
+                    if (!codeVerifier) {
+                        setError("Code verifier error. Please try logging in again.");
+                        window.history.replaceState({}, document.title, "/");
+                        setIsLoading(false);
+                        return;
                     }
-                })
-        }
-    }, [accessToken])
 
-    function handleLogout() {
-        localStorage.clear()
-        setAccessToken(null)
+                    if (isLoading) await fetchAccessToken(code, codeVerifier);
+                    setIsLoggedIn(true);
+
+                    window.history.replaceState({}, document.title, "/");
+                        
+                }
+            } catch (error) {
+                console.error("Error checking access token:", error);
+                setError(error.message || "Authentication failed");
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        if (isLoading) handleAuth();
+
+    }, []);
+
+    function handleLogin() {
+        setError(null);
+        redirectToSpotifyAuth()
     }
 
-    if (!accessToken) {
+    function handleLogout() {
+        tokenManager.clearAll();
+        setIsLoggedIn(false);
+        setError(null);
+    }
+
+    if (isLoading) {
         return (
-            <div className="landing">
-                <h1>see my sound</h1>
-                <p>a Spotify powered application</p>
-                <button 
-                    className="login-button" 
-                    onClick={redirectToSpotifyAuth}
-                >
-                    Login with 
-                    <img
-                        src={spotifyLogo}
-                        alt="Spotify logo"
-                    />
-                </button>
+            <div className="app">
+                <div className="app-loading">
+                    <p>Loading...</p>
+                </div>
             </div>
         )
     }
 
-    return <Dashboard onLogout={handleLogout} />
+    return (
+        <div className="app">
+            {error && (
+                <div className="app-error-banner">
+                    <span>{error}</span>
+                    <button onClick={() => setError(null)}>x</button>
+                </div>
+            )}
+
+            { !isLoggedIn ? 
+                <Landing 
+                    handleLogin={handleLogin}
+                /> 
+                : (
+                    <>
+                        <Header onLogout={handleLogout} />
+                        <main>
+                            <FilterBar />
+                            <TopList onSessionExpired={handleLogout} />
+                        </main>
+                    </>
+                )
+            }
+        </div>
+    )
 }
