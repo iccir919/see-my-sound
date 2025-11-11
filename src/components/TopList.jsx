@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSpotify } from "../context/SpotifyContext.jsx";
 import { fetchTopItems } from "../utils/spotifyApi.js";
+import FilterBar from "./FilterBar.jsx";
 import CollageModal from "./CollageModal.jsx";
 import PlaylistModal from "./PlaylistModal.jsx";
+
 
 
 export default function TopList({ onSessionExpired }) {
@@ -95,13 +97,7 @@ export default function TopList({ onSessionExpired }) {
     return (
         <section className="top-list">
 
-            <div className="top-list-actions">
-                {type === "artists" ? (
-                    <button className="btn-primary" onClick={() => setShowCollage(true)}>Make Collage</button>
-                ) : (
-                    <button className="btn-primary" onClick={() => setShowPlaylist(true)}>Make Playlist</button>
-                )}
-            </div>
+            <FilterBar />
 
             <div className="grid">
                 {items.map((item, index) => {
@@ -115,6 +111,14 @@ export default function TopList({ onSessionExpired }) {
                         </div>
                     );
                 })}
+            </div>
+
+            <div className="top-list-action">
+                {type === "artists" ? (
+                    <button className="btn-primary" onClick={() => setShowCollage(true)}>Make Collage</button>
+                ) : (
+                    <button className="btn-primary" onClick={() => setShowPlaylist(true)}>Make Playlist</button>
+                )}
             </div>
 
             {showCollage && <CollageModal onClose={() => setShowCollage(false)} />}

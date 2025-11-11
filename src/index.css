@@ -99,16 +99,18 @@ header {
 .filter-bar {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     margin: .0.75em 0;
 }
 
 .sentence {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.5em;
     color: #fff;
-    font-size: 1.25rem;
-    font-weight: 500;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .inline-select {
@@ -121,7 +123,7 @@ header {
 }
 
 .top-list {
-    padding: 1.25em;
+    margin: 2em;
 }
 
 .top-list-empty {
@@ -160,11 +162,11 @@ header {
 }
 
 
-.top-list-actions {
+.top-list-action {
     display: flex;
     justify-content: center;
+    margin-top: 2.5em;
     margin-bottom: 1.5em;
-    gap: 0.5em;
 }
 
 .grid {
