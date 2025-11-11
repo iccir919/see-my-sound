@@ -1,25 +1,24 @@
-import React, { createContext, use, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 
 const SpotifyContext = createContext();
 
 export function SpotifyProvider({ children }) {
-    const [accessToken, setAccessToken] = useState(null);
-    const [refreshToken, setRefreshToken] = useState(null);
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const [type, setType] = useState("artists");
     const [timeRange, setTimeRange] = useState("medium_term");
     const [limit, setLimit] = useState(10);
 
-    const [items, setItems] = useState([]);
+    const [items, setItemsState] = useState(null);
+
+    const setItems = useCallback((newItems) => {
+        setItemsState(newItems);
+    }, []);
 
     return (
         <SpotifyContext.Provider
             value={{
-                accessToken,
-                setAccessToken,
-                refreshToken,
-                setRefreshToken,
                 isLoggedIn,
                 setIsLoggedIn,
                 type,

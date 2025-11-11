@@ -1,5 +1,7 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { useSpotify } from "../context/SpotifyContext.jsx";
+import { createPlaylistWithTracks  } from "../utils/spotifyApi.js";
+
 
 
 function timeLabel(timeRange) {
@@ -9,73 +11,58 @@ function timeLabel(timeRange) {
     return "";
 }
 
-export default function PlaylistModal({ onClose }) {
+export default function PlaylistModal({ onClose, onSessionExpired }) {
     const { 
         items,
-        accessToken,
         limit,
         timeRange
     } = useSpotify();
 
     const [loading, setLoading] = useState(false);
-    const [playlistStatus, setPlaylistStatus] = useState("");
-    const [playlistName, playListName] = useState(`See My Top ${limit} Tracks — ${timeLabel(timeRange)}`);
+    const [playlistUrl, setPlaylistUrl] = useState(null);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
+    const [playlistName, setPlaylistName] = useState(`See My Top ${limit} Tracks — ${timeLabel(timeRange)}`);
 
-    const createPlaylist = async () => {
+    async function handlePlaylistCreation() {
         setLoading(true);
-        setPlaylistStatus("");
+        setError(null);
+        setSuccess(false);
 
         try {
-
-            const userRes = await fetch("https://api.spotify.com/v1/me", {
-                headers: { Authorization: `Bearer ${accessToken}` },
-            });
-            if (!userRes.ok) throw new Error("Failed to fetch user profile");
-            const userData = await userRes.json();
-            const userId = userData.id;
-
-            const createPlaylistRes = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-                method: "POST",
-                headers: { 
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: playlistName,
-                    description: `My top ${limit} tracks from ${timeLabel(timeRange)} created with See My Sound.`,
-                    public: true,
-                }),
-            });
-            if (!createPlaylistRes.ok) {
-                const text = await createPlaylistRes.text();
-                throw new Error(`Failed to create playlist: ${text}`);
-            }
-
-            const playlistData = await createPlaylistRes.json();
-
             const trackUris = items.map(item => item.uri);
+            const description = `My top ${limit} tracks from ${timeLabel(timeRange)} created with See My Sound.`;
 
-            if (trackUris.length > 0) {
-                const addTracksRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
-                    method: "POST",
-                    headers: { 
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        uris: trackUris,
-                    }),
-                });
-                if (!addTracksRes.ok) {
-                    const text = await addTracksRes.text();
-                    throw new Error(`Failed to add tracks to playlist: ${text}`);
-                }
+            const playlist = await createPlaylistWithTracks(
+                playlistName,
+                description,
+                trackUris
+            )
 
-                setPlaylistStatus(`Playlist created successfully! You can view it on Spotify: ${playlistData.external_urls.spotify}`);
-            }
+            setSuccess(true);
+            setPlaylistUrl(playlist.external_urls.spotify);
         } catch (error) {
-            console.error("Error creating playlist:", error);
-            setPlaylistStatus("Error creating playlist. Please try again.");
+            console.error("Error creating playlist", error);
+
+            if (error.message === "ACCESS_FORBIDDEN") {
+                setError(
+                    "Access denied. This app is in development mode. Please email your Spotify account email to neil.ricci9@gmail.com to be added to the allowlist."
+                );
+            } else if (
+                error.message === "SESSION_EXPIRED"
+                || error.message === "TOKEN_EXPIRED"
+            ) {
+                setError("Your session has expired. Logging you out...");
+                setTimeout(() => {
+                    onSessionExpired()
+                }, 2000)
+            } else if (error.message.startsWith("RATE_LIMITED:")) {
+                const seconds = error.message.split(":")[1]
+                setError(`Too many requests. Please wait ${seconds} seconds.`)
+            } else {
+                setError(error.message || "Failed to create playlist. Please try again.")
+            }
+
         } finally {
             setLoading(false);
         }
@@ -88,19 +75,50 @@ export default function PlaylistModal({ onClose }) {
                 <h3>Create Playlist</h3>
                 <input 
                     className="playlist-name-input" 
-                    type="text" value={playlistName} 
-                    onChange={(e) => playListName(e.target.value)} 
+                    type="text" 
+                    value={playlistName} 
+                    onChange={(e) => setPlaylistName(e.target.value)} 
+                    disabled={loading || success}
                 />
-                                {playlistStatus && <p className="playlist-status">{playlistStatus}</p>}
+
+                {success && playlistUrl && (
+                    <div className="playlist-status-success">
+                        <p>
+                            ✓ Playlist created!{' '}
+                            <a 
+                                href={playlistUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                            >
+                                Open in Spotify
+                            </a>
+                        </p>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="playlist-status-error">
+                        <p>{error}</p>
+                    </div>
+                )}
+
+
+
                 <div className="modal-actions" >
                     <button
                         className="btn-primary" 
-                        onClick={createPlaylist}
-                        disabled={loading}
+                        onClick={handlePlaylistCreation}
+                        disabled={loading || success}
                     >
                         {loading ? "Creating..." : "Create on Spotify"}
                     </button>
-                    <button className="btn-outline" onClick={onClose}>Close</button>
+                    <button 
+                        className="btn-outline" 
+                        onClick={onClose}
+                        disabled={loading}
+                    >
+                        Close
+                    </button>
                 </div>
             </div>
         </div>

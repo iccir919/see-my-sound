@@ -47,6 +47,45 @@ body {
     text-align: center;
 }
 
+.app-error-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #d32f2f;
+    color: white;
+    padding: 1em 1.75em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;  
+}
+
+.app-error-banner button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+}
+
+.app-loading {
+    min-height: 100vh;
+}
+
+.app-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3em;
+    gap: 1em;
+}
+
+
 header {
     display: flex;
     align-items: center;
@@ -84,6 +123,42 @@ header {
 .top-list {
     padding: 1.25em;
 }
+
+.top-list-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    gap: 0.5rem;
+    text-align: center;
+    color: #999;
+}
+
+.top-list-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3em;
+    gap: 1em;
+}
+
+.top-list-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3em;
+    gap: 1.5em;
+    text-align: center;
+}
+
+.top-list-error p {
+    color: #d32f2f;
+    font-size: 1.1rem;
+}
+
 
 .top-list-actions {
     display: flex;
@@ -166,11 +241,31 @@ header {
     font-size: 1.15rem;
 }
 
-.playlist-status {
-    margin-top: 0.5em;
-    font-size: 1rem;
-    color: var(--muted);
-}   
+.playlist-status-success {
+    padding: 1em;
+    background-color: rgba(29, 185, 84, 0.1);
+    border: 1px solid rgba(29, 185, 84, 0.3);
+    border-radius: 0.5em;
+    margin: 1em 0;
+    color: #1db954;
+}
+
+
+.playlist-status-success a {
+    color: #1db954;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.playlist-error-message {
+    padding: 1em;
+    background-color: rgba(211, 47, 47, 0.1);
+    border: 1px solid rgba(211, 47, 47, 0.3);
+    border-radius: 0.5em;
+    margin: 1em 0;
+    color: #d32f2f;
+}
+
 
 .collage-grid {
     display: grid;

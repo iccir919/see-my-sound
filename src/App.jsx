@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSpotify } from "./context/SpotifyContext.jsx";
 import { redirectToSpotifyAuth, fetchAccessToken } from "./utils/auth.js";
+import { tokenManager } from "./utils/tokenManager.js";
 import Landing from "./components/Landing.jsx";
 import Header from "./components/Header.jsx";
 import FilterBar from "./components/FilterBar.jsx";
@@ -8,78 +9,106 @@ import TopList from "./components/TopList.jsx";
 import "./index.css";
 
 export default function App() {
+
     const {
-        setAccessToken,
-        setRefreshToken,
-        isLoggedIn,
-        setIsLoggedIn
+        setIsLoggedIn,
+        isLoggedIn
     } = useSpotify();
 
-    // On app load, check localStorage or exchange code from redirect
-    useEffect( () => {
-        // check stored tokens first
-        const storedAccessToken = localStorage.getItem("access_token");
-        const storedRefreshToken = localStorage.getItem("refresh_token");
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-        if (storedAccessToken) {
-            setAccessToken(storedAccessToken);
-            if (storedRefreshToken) setRefreshToken(storedRefreshToken);
-            setIsLoggedIn(true);
-            return;
-        }
 
-        // check for authorization code in URL
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-        
-        if (code) {
-            const codeVerifier = localStorage.getItem("code_verifier");
-            if (!codeVerifier) {
-                console.error("Code verifier not found in localStorage");
-                return;
-            }
+    useEffect(() => {
+        async function handleAuth() {
 
-            fetchAccessToken(code, codeVerifier).then(data => {
-                if (!data) return;
 
-                localStorage.setItem("access_token", data.access_token);
-                setAccessToken(data.access_token);
-
-                if (data.refresh_token) {
-                    localStorage.setItem("refresh_token", data.refresh_token);
-                    setRefreshToken(data.refresh_token);    
+            try {
+                const accessToken = tokenManager.getAccessToken();
+                if (accessToken) {
+                    setIsLoggedIn(true);
+                    setIsLoading(false);
+                    return;
                 }
 
-                setIsLoggedIn(true);
-                localStorage.removeItem("code_verifier");
-                window.history.replaceState({}, document.title, "/");   
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get("code");
+                const authError = urlParams.get("error");
 
-                }).catch(err => {
-                    console.error("Failed to exchange code,", err);
-                })
+                if (authError) {
+                    setError(`Authentication error: ${authError}`);
+                    window.history.replaceState({}, document.title, "/");
+                    setIsLoading(false);
+                    return;
+                }
+
+                if (code) {
+                    const codeVerifier = tokenManager.getCodeVerifier();
+                    if (!codeVerifier) {
+                        setError("Code verifier error. Please try logging in again.");
+                        window.history.replaceState({}, document.title, "/");
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    if (isLoading) await fetchAccessToken(code, codeVerifier);
+                    setIsLoggedIn(true);
+
+                    window.history.replaceState({}, document.title, "/");
+                        
+                }
+            } catch (error) {
+                console.error("Error checking access token:", error);
+                setError(error.message || "Authentication failed");
+            } finally {
+                setIsLoading(false);
+            }
         }
 
-    }, [setAccessToken, setRefreshToken, setIsLoggedIn]);
+        if (isLoading) handleAuth();
+
+    }, []);
+
+    function handleLogin() {
+        setError(null);
+        redirectToSpotifyAuth()
+    }
 
     function handleLogout() {
-        localStorage.clear();
-        setAccessToken(null);
-        setRefreshToken(null);
+        tokenManager.clearAll();
         setIsLoggedIn(false);
+        setError(null);
+    }
+
+    if (isLoading) {
+        return (
+            <div className="app">
+                <div className="app-loading">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
         <div className="app">
+            {error && (
+                <div className="app-error-banner">
+                    <span>{error}</span>
+                    <button onClick={() => setError(null)}>x</button>
+                </div>
+            )}
+
             { !isLoggedIn ? 
                 <Landing 
-                    handleLogin={redirectToSpotifyAuth}
+                    handleLogin={handleLogin}
                 /> 
                 : (
                     <>
                         <Header onLogout={handleLogout} />
                         <main>
                             <FilterBar />
-                            <TopList />
+                            <TopList onSessionExpired={handleLogout} />
                         </main>
                     </>
                 )
